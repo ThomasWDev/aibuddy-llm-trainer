@@ -90,8 +90,11 @@ class Transformer(nn.Module):
         loss = None
         if targets is not None:
             B, T, C = logits.shape
-            flat_logits = logits.view(B * T, C)
-            targets = targets.view(B * T).long()
+            # reshape (not view): batch tensors sliced out of the HDF5-backed numpy
+            # arrays can be non-contiguous on the CPU path, and .view() raises
+            # "view size is not compatible with input tensor's size and stride".
+            flat_logits = logits.reshape(B * T, C)
+            targets = targets.reshape(B * T).long()
             loss = F.cross_entropy(flat_logits, targets)
         return logits, loss
 
