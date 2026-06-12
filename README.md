@@ -20,6 +20,20 @@ I implemented a transformer model from scratch using PyTorch, based on the paper
 > public datasets (Alpaca, Dolly, Anthropic HH-RLHF, UltraFeedback, GSM8K) and built for
 > multi-GPU (DDP + bf16). See **[POST_TRAINING.md](POST_TRAINING.md)** for the full guide.
 
+## Laptop quickstart (no GPU)
+
+Train a tiny ~13M-parameter model on CPU (macOS / Linux) in minutes — no CUDA, no account:
+
+```bash
+uv venv --python 3.11
+uv pip install -r requirements-laptop.txt
+bash scripts/laptop_quickstart.sh
+```
+
+This downloads ~450 MB of public-domain text, tokenizes a small sample, pretrains the
+`configs/laptop/` config for 300 steps, and prints a text continuation from the fresh
+checkpoint. Each step is idempotent — re-running resumes where it left off.
+
 Below is the output of the trained 13 million parameter LLM:
 
 ```
