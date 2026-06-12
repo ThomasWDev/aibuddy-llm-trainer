@@ -1,0 +1,12 @@
+{
+  "batch_size": 8,
+  "grad_accum": 1,
+  "train_steps": 300,
+  "eval_steps": 150,
+  "eval_iters": 5,
+  "warmup_steps": 20,
+  "save_every": 300,
+  "train_path": "data/train/pile_train.h5",
+  "dev_path": "data/val/pile_dev.h5",
+  "out_ckpt": "checkpoints/laptop-tiny.pt"
+}

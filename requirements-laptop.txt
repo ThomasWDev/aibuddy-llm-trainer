@@ -1,0 +1,17 @@
+# Laptop / no-GPU quickstart dependencies (macOS, Linux, Windows — CPU or Apple MPS).
+#
+# The main requirements.txt pins the CUDA 11.8 PyTorch wheel index, which has no
+# macOS/arm64 wheels — strict resolvers (uv) fail there instead of falling back
+# to PyPI. This file resolves everything from PyPI, where torch ships CPU and
+# Apple-Silicon (MPS) wheels. It also drops torchvision/torchaudio, which the
+# text-only training path never imports, cutting the install size considerably.
+#
+#   uv venv --python 3.11
+#   uv pip install -r requirements-laptop.txt
+torch
+numpy
+h5py
+requests
+tqdm
+zstandard
+tiktoken
