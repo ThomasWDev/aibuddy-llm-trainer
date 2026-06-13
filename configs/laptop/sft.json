@@ -1,0 +1,15 @@
+{
+  "pretrained_ckpt": "checkpoints/laptop-tiny.pt",
+  "data_path": "data/sft_custom.h5",
+  "dev_path": "data/sft_custom_dev.h5",
+  "out_ckpt": "checkpoints/laptop-sft.pt",
+  "batch_size": 4,
+  "grad_accum": 1,
+  "epochs": 4,
+  "max_steps": -1,
+  "eval_steps": 50,
+  "warmup_steps": 5,
+  "lr": 0.0003,
+  "min_lr": 0.00003,
+  "save_every": 10000
+}

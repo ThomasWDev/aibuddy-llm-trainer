@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import contextlib
 import math
+import os
 import time
 
 import torch
@@ -27,11 +28,14 @@ from src.post_training.optim import configure_optimizer, cosine_lr
 from src.post_training.sft import sft_loss
 from src.post_training.utils import amp_autocast, load_backbone_from_ckpt, save_stage_ckpt, set_seed, unwrap
 
-DEV_PATH = "/ephemeral/data/sft_dev_packed.h5"
 
 
 @torch.no_grad()
 def eval_dev(model, cfg, ctx, dev_path: str, max_batches: int = 50) -> float:
+    # Fail-soft on a missing dev file (e.g. custom laptop datasets without a
+    # held-out split) instead of crashing the whole fine-tune at the end.
+    if not os.path.exists(dev_path):
+        return float("nan")
     model.eval()
     it = get_sft_batch_iterator(dev_path, cfg.batch_size, device=ctx.device,
                                 rank=ctx.rank, world_size=ctx.world_size, shuffle=False, infinite=False)
@@ -100,7 +104,7 @@ def main():
                 logger.log(step, {"train_loss": loss.item(), "lr": lr})
 
         if step > 0 and step % cfg.eval_steps == 0:
-            dev = reduce_scalar(eval_dev(model, cfg, ctx, DEV_PATH), ctx)
+            dev = reduce_scalar(eval_dev(model, cfg, ctx, cfg.dev_path), ctx)
             if ctx.is_main:
                 print(f"  [eval] step {step} | dev_loss {dev:.4f} | dev_ppl {math.exp(min(20, dev)):.2f}")
                 if logger:
@@ -111,7 +115,7 @@ def main():
                             metrics={"train_loss": loss.item()})
 
     if ctx.is_main:
-        dev = eval_dev(model, cfg, ctx, DEV_PATH)
+        dev = eval_dev(model, cfg, ctx, cfg.dev_path)
         save_stage_ckpt(cfg.out_ckpt, model, optimizer, stage="sft", cfg=cfg, step=total_steps,
                         metrics={"dev_loss": dev})
         print(f"Done SFT. dev_loss {dev:.4f} -> {cfg.out_ckpt}")

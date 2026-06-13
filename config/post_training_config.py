@@ -67,6 +67,7 @@ class PretrainConfig(BaseModelConfig):
 class SFTConfig(BaseModelConfig):
     pretrained_ckpt: str = f"{CKPT_DIR}/base_pretrained.pt"
     data_path: str = f"{DATA_DIR}/sft_packed.h5"
+    dev_path: str = f"{DATA_DIR}/sft_dev_packed.h5"
     out_ckpt: str = f"{CKPT_DIR}/sft.pt"
     batch_size: int = 16
     grad_accum: int = 2
